@@ -6,5 +6,5 @@
 
 - Geolocator 학습
 - http get 메서드 사용법 및 response class(resonse.body , response.statuscode) 학습
-- json parsing (jsonDecode) 학습 
+- json parsing (jsonDecode) 학습    
   ... ing
