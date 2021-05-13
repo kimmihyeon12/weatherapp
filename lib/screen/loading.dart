@@ -1,8 +1,11 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
-import 'package:http/http.dart' as http;
+import 'package:get/get.dart';
+
+import 'package:weather_app/data/my_location.dart';
+import 'package:weather_app/data/network.dart';
+import 'package:weather_app/screen/weather_screen.dart';
+
+const apikey = '132a053a5227678b54b4d03157a806b1';
 
 class Loading extends StatefulWidget {
   @override
@@ -10,6 +13,8 @@ class Loading extends StatefulWidget {
 }
 
 class _LoadingState extends State<Loading> {
+  double getlat;
+  double getlon;
   @override
   void initState() {
     // TODO: implement initState
@@ -19,39 +24,27 @@ class _LoadingState extends State<Loading> {
   }
 
   void getLocation() async {
-    try {
-      Position position = await Geolocator.getCurrentPosition(
-          desiredAccuracy: LocationAccuracy.high);
-      print(position);
-    } catch (e) {
-      // deny , no wify(앱충돌방지)
-      print('위치경도 존재하지 않음!');
-    }
+    MyLocation myLocation = new MyLocation();
+    //await 로 기다리는것 futrue 타입이여야함
+    await myLocation.getMyCurrentLocation();
+    getlat = myLocation.lat;
+    getlon = myLocation.lon;
+    print("위도:$getlat 경도:$getlon");
+    Network network = new Network(
+        "https://api.openweathermap.org/data/2.5/weather?lat=${getlat}&lon=${getlon}&appid=${apikey}&units=metric");
+    var weatherData = await network.getJsonData();
+    print(weatherData);
+    //Get.to(WeatherScreen(), arguments: weatherData);
   }
 
-  void fetchData() async {
-    String url =
-        "https://samples.openweathermap.org/data/2.5/weather?q=London&appid=b1b15e88fa797225412429c1c50c122a1";
-    http.Response response = await http.get(url);
-    //앱 성공적으로 실행되었을때 200
-    if (response.statusCode == 200) {
-      String jsonData = response.body;
-      var myJson = jsonDecode(jsonData);
-      print(myJson['weather'][0]['description']);
-      print(myJson['wind']['speed']);
-      print(myJson['id']);
-    }
-  }
+  void fetchData() async {}
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: RaisedButton(
-          onPressed: () {},
-          child: Text('Get my location', style: TextStyle(color: Colors.white)),
-          color: Colors.pinkAccent,
-        ),
+      body: Container(
+        color: Color(0xffFFEB9A),
+        child: Center(child: Image.asset("./assets/Loading/loading.png")),
       ),
     );
   }
