@@ -1,46 +1,66 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
+import 'package:weather_app/api/weather.dart';
+import 'package:weather_app/controller/location.controller.dart';
+import 'package:weather_app/controller/weather.controller.dart';
+import 'package:weather_app/data/latlon_conversion.dart';
 import 'package:weather_app/data/my_location.dart';
-import 'package:weather_app/data/network.dart';
-import 'package:weather_app/screen/weather_screen.dart';
 
-const apikey = '132a053a5227678b54b4d03157a806b1';
+const apikey =
+    'N7SieJxvk8AVxfM4SrmQOiAc5hOjevbbE9DJepEi0ibB1mZ0otnwK9ytSSDwTcxdDR4/X/OtQ8keM0XcEFQ2Gg==';
 
-class Loading extends StatefulWidget {
-  @override
-  _LoadingState createState() => _LoadingState();
-}
+class Loading extends GetView<LocationController> {
+  var year, month, day, hour;
 
-class _LoadingState extends State<Loading> {
-  double getlat;
-  double getlon;
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    getLocation();
-    fetchData();
+  void init() async {
+    //현재시간 얻어오기
+    year = await DateTime.now().year;
+    month = await DateTime.now().month;
+    day = await DateTime.now().day;
+    hour = await DateTime.now().hour - 1;
+    if (day < 10) {
+      day = "0" + day.toString();
+    }
+    if (month < 10) {
+      month = "0" + month.toString();
+    }
+    if (hour < 10) {
+      hour = "0" + hour.toString();
+    }
+    //location 얻어오기
+    await getLocation();
+    //weather api 호출
+    await getWeatherData();
+    await 1.delay();
+    Get.offNamed("/home");
   }
 
   void getLocation() async {
+    //현재 lat lon 가져오기
     MyLocation myLocation = new MyLocation();
-    //await 로 기다리는것 futrue 타입이여야함
     await myLocation.getMyCurrentLocation();
-    getlat = myLocation.lat;
-    getlon = myLocation.lon;
-    print("위도:$getlat 경도:$getlon");
-    Network network = new Network(
-        "https://api.openweathermap.org/data/2.5/weather?lat=${getlat}&lon=${getlon}&appid=${apikey}&units=metric");
-    var weatherData = await network.getJsonData();
-    print(weatherData);
-    //Get.to(WeatherScreen(), arguments: weatherData);
+    controller.setLocation(myLocation.lat, myLocation.lon);
+    //가져온 lat lon값 기상청 정보 사용하기위해 격자값으로 변환
+    Map grid_locaion =
+        await Conversion.location_conversion(myLocation.lat, myLocation.lon);
+    controller.setGridLocation(
+        grid_locaion['grid_lat'].toInt(), grid_locaion['grid_lon'].toInt());
   }
 
-  void fetchData() async {}
+  Future<void> getWeatherData() async {
+    String url =
+        'http://apis.data.go.kr/1360000/VilageFcstInfoService/getUltraSrtNcst?serviceKey=${apikey}&pageNo=2&numOfRows=20&dataType=json&base_date=${year}${month}${day}&base_time=${hour}00&nx=${controller.grid_lat}&ny=${controller.grid_lon}';
+    Weather weather = new Weather(url);
+    var weatherData = await weather.getJsonData();
+    WeatherController.to.setCurrentTem(
+        weatherData["response"]["body"]["items"]["item"][3]["obsrValue"]);
+    print(weatherData);
+  }
 
   @override
   Widget build(BuildContext context) {
+    init();
+
     return Scaffold(
       body: Container(
         color: Color(0xffFFEB9A),
