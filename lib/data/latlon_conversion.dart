@@ -1,7 +1,9 @@
 import 'dart:math' as math;
 
 class Conversion {
-  static location_conversion(double lat_X, double lng_Y) {
+  int grid_lat;
+  int grid_lon;
+  location_conversion(double lat_X, double lng_Y) {
     double RE = 6371.00877; // 지구 반경(km)
     double GRID = 5.0; // 격자 간격(km)
     double SLAT1 = 30.0; // 투영 위도1(degree)
@@ -44,7 +46,8 @@ class Conversion {
     rs.x = (ra2 * math.sin(theta) + XO + 0.5).floor().toDouble();
     rs.y = (ro - ra * math.cos(theta) + YO + 0.5).floor().toDouble();
     print("rs 위도 ${rs.x} 경도 ${rs.y}");
-    return {"grid_lat": rs.x, "grid_lon": rs.y};
+    grid_lat = rs.x.toInt();
+    grid_lon = rs.y.toInt();
   }
 }
 

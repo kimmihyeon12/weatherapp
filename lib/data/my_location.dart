@@ -4,6 +4,7 @@ import 'package:geolocator/geolocator.dart';
 class MyLocation {
   double lat;
   double lon;
+  String address;
 
   Future<void> getMyCurrentLocation() async {
     try {
@@ -12,10 +13,9 @@ class MyLocation {
       lat = position.latitude;
       lon = position.longitude;
 
-      var coordinates = new Coordinates(35.1747854, 126.9354199);
-      var address =
-          await Geocoder.local.findAddressesFromCoordinates(coordinates);
-      var first = address.first;
+      var coordinates = new Coordinates(lat, lon);
+      var data = await Geocoder.local.findAddressesFromCoordinates(coordinates);
+      var first = data.first;
       String area = first.adminArea != null
           ? first.adminArea.toString()
           : first.subAdminArea.toString();
@@ -25,7 +25,7 @@ class MyLocation {
       String thoroughfare = first.thoroughfare != null
           ? first.thoroughfare.toString()
           : first.subThoroughfare.toString();
-      print("address ${area} ${locality} ${thoroughfare}");
+      address = ' ${area} ${locality} ${thoroughfare} ';
     } catch (e) {
       // deny , no wify(앱충돌방지)
       print('MyLocation error!');

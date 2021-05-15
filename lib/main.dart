@@ -19,7 +19,10 @@ class MyApp extends StatelessWidget {
             name: "/",
             page: () => Loading(),
             bindings: [WeatherBinding(), LocationBinding()]),
-        GetPage(name: "/home", page: () => Home(), binding: WeatherBinding()),
+        GetPage(
+            name: "/home",
+            page: () => Home(),
+            bindings: [WeatherBinding(), LocationBinding()]),
       ],
     );
   }

@@ -10,14 +10,15 @@ const apikey =
     'N7SieJxvk8AVxfM4SrmQOiAc5hOjevbbE9DJepEi0ibB1mZ0otnwK9ytSSDwTcxdDR4/X/OtQ8keM0XcEFQ2Gg==';
 
 class Loading extends GetView<LocationController> {
-  var year, month, day, hour;
+  var year, month, day, hour, minute;
 
   void init() async {
     //현재시간 얻어오기
     year = await DateTime.now().year;
     month = await DateTime.now().month;
     day = await DateTime.now().day;
-    hour = await DateTime.now().hour - 1;
+    hour = await DateTime.now().hour;
+    minute = await DateTime.now().minute;
     if (day < 10) {
       day = "0" + day.toString();
     }
@@ -25,6 +26,9 @@ class Loading extends GetView<LocationController> {
       month = "0" + month.toString();
     }
     if (hour < 10) {
+      hour = "0" + hour.toString();
+    }
+    if (minute < 10) {
       hour = "0" + hour.toString();
     }
     //location 얻어오기
@@ -40,21 +44,27 @@ class Loading extends GetView<LocationController> {
     MyLocation myLocation = new MyLocation();
     await myLocation.getMyCurrentLocation();
     controller.setLocation(myLocation.lat, myLocation.lon);
+    controller.setAddress(myLocation.address);
+    print(myLocation.address);
     //가져온 lat lon값 기상청 정보 사용하기위해 격자값으로 변환
-    Map grid_locaion =
-        await Conversion.location_conversion(myLocation.lat, myLocation.lon);
-    controller.setGridLocation(
-        grid_locaion['grid_lat'].toInt(), grid_locaion['grid_lon'].toInt());
+    Conversion conversion = new Conversion();
+    await conversion.location_conversion(myLocation.lat, myLocation.lon);
+    controller.setGridLocation(conversion.grid_lat, conversion.grid_lon);
   }
 
   Future<void> getWeatherData() async {
     String url =
-        'http://apis.data.go.kr/1360000/VilageFcstInfoService/getUltraSrtNcst?serviceKey=${apikey}&pageNo=2&numOfRows=20&dataType=json&base_date=${year}${month}${day}&base_time=${hour}00&nx=${controller.grid_lat}&ny=${controller.grid_lon}';
+        'http://apis.data.go.kr/1360000/VilageFcstInfoService/getUltraSrtFcst?serviceKey=${apikey}&pageNo=1&numOfRows=100&dataType=json&base_date=${year}${month}${day}&base_time=${hour}${minute}&nx=${controller.grid_lat}&ny=${controller.grid_lon}';
     Weather weather = new Weather(url);
     var weatherData = await weather.getJsonData();
-    WeatherController.to.setCurrentTem(
-        weatherData["response"]["body"]["items"]["item"][3]["obsrValue"]);
-    print(weatherData);
+    String precipitationdata =
+        weatherData["response"]["body"]["items"]["item"][6]["fcstValue"];
+    String skydata =
+        weatherData["response"]["body"]["items"]["item"][18]["fcstValue"];
+    String tempdata =
+        weatherData["response"]["body"]["items"]["item"][24]["fcstValue"];
+    WeatherController.to.setWeather(precipitationdata, skydata, tempdata);
+    print("data $precipitationdata $skydata $tempdata");
   }
 
   @override
