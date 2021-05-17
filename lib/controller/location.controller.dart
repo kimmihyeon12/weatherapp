@@ -5,6 +5,9 @@ class LocationController extends GetxService {
 
   RxDouble lat = 0.0.obs;
   RxDouble lon = 0.0.obs;
+  RxString area = "".obs;
+  RxString locality = "".obs;
+  RxString thoroughfare = "".obs;
   RxString address = "".obs;
   RxInt grid_lat = 0.obs;
   RxInt grid_lon = 0.obs;
@@ -19,7 +22,10 @@ class LocationController extends GetxService {
     grid_lon(longitude);
   }
 
-  void setAddress(String value) {
-    address(value);
+  void setAddress(v1, v2, v3, v4) {
+    area(v1);
+    locality(v2);
+    thoroughfare(v3);
+    address(v4);
   }
 }

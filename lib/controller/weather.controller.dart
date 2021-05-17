@@ -13,6 +13,10 @@ class WeatherController extends GetxService {
   RxString currentprecipitationCode = "".obs;
   RxString currentprecipitationstatus = "".obs;
 
+  RxString currentImage = "".obs;
+
+  final weeklyWeather = <dynamic>[0, 0, 0, 0, 0, 0, 0].obs;
+
   //set weather
   void setWeather(precipitationdata, skydata, tempdata) {
     currentSkyCode(skydata);
@@ -50,5 +54,49 @@ class WeatherController extends GetxService {
 
   void setprecipitationstatus(value) {
     currentprecipitationstatus(value);
+  }
+
+  void setImage() {
+    //맑음
+    if (currentSkystatus == "맑음") {
+      if (currentprecipitationstatus == "비") {
+      } else if (currentprecipitationstatus == "비/눈(진눈개비)") {
+      } else if (currentprecipitationstatus == "눈") {
+      } else if (currentprecipitationstatus == "소나기") {
+      } else if (currentprecipitationstatus == "빗방울") {
+      } else if (currentprecipitationstatus == "빗방울/눈날림") {
+      } else if (currentprecipitationstatus == "눈날림") {
+      } else {}
+    } else if (currentSkystatus == "구름많음") {
+      if (currentprecipitationstatus == "비") {
+      } else if (currentprecipitationstatus == "비/눈(진눈개비)") {
+      } else if (currentprecipitationstatus == "눈") {
+      } else if (currentprecipitationstatus == "소나기") {
+      } else if (currentprecipitationstatus == "빗방울") {
+      } else if (currentprecipitationstatus == "빗방울/눈날림") {
+      } else if (currentprecipitationstatus == "눈날림") {
+      } else {}
+    } else {
+      if (currentSkystatus == "흐림") {
+        if (currentprecipitationstatus == "비") {
+        } else if (currentprecipitationstatus == "비/눈(진눈개비)") {
+        } else if (currentprecipitationstatus == "눈") {
+        } else if (currentprecipitationstatus == "소나기") {
+        } else if (currentprecipitationstatus == "빗방울") {
+        } else if (currentprecipitationstatus == "빗방울/눈날림") {
+        } else if (currentprecipitationstatus == "눈날림") {
+        } else {}
+      }
+    }
+  }
+
+  setWeeklyWeater(day1, day2, day3, day4, day5, day6, day7) {
+    weeklyWeather[0] = day1;
+    weeklyWeather[1] = day2;
+    weeklyWeather[2] = day3;
+    weeklyWeather[3] = day4;
+    weeklyWeather[4] = day5;
+    weeklyWeather[5] = day6;
+    weeklyWeather[6] = day7;
   }
 }

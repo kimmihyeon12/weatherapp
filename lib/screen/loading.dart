@@ -35,8 +35,11 @@ class Loading extends GetView<LocationController> {
     await getLocation();
     //weather api 호출
     await getWeatherData();
+
+    await getWeatherWeeklyData();
+
     await 1.delay();
-    Get.offNamed("/home");
+    Get.offNamed("/home", arguments: hour);
   }
 
   void getLocation() async {
@@ -44,8 +47,10 @@ class Loading extends GetView<LocationController> {
     MyLocation myLocation = new MyLocation();
     await myLocation.getMyCurrentLocation();
     controller.setLocation(myLocation.lat, myLocation.lon);
-    controller.setAddress(myLocation.address);
+    controller.setAddress(myLocation.area, myLocation.locality,
+        myLocation.thoroughfare, myLocation.address);
     print(myLocation.address);
+
     //가져온 lat lon값 기상청 정보 사용하기위해 격자값으로 변환
     Conversion conversion = new Conversion();
     await conversion.location_conversion(myLocation.lat, myLocation.lon);
@@ -55,8 +60,13 @@ class Loading extends GetView<LocationController> {
   Future<void> getWeatherData() async {
     String url =
         'http://apis.data.go.kr/1360000/VilageFcstInfoService/getUltraSrtFcst?serviceKey=${apikey}&pageNo=1&numOfRows=100&dataType=json&base_date=${year}${month}${day}&base_time=${hour}${minute}&nx=${controller.grid_lat}&ny=${controller.grid_lon}';
+    // String url =
+    //     "https://api.openweathermap.org/data/2.5/onecall?lat=${controller.lat}&lon=${controller.lon}&exclude=hourly&appid=132a053a5227678b54b4d03157a806b1&units=metric&lang=kr";
     Weather weather = new Weather(url);
     var weatherData = await weather.getJsonData();
+    // print(weatherData["daily"]);
+    // var temp = weatherData["daily"][0]["temp"];
+    // var weathers = weatherData["daily"][0]["temp"];
     String precipitationdata =
         weatherData["response"]["body"]["items"]["item"][6]["fcstValue"];
     String skydata =
@@ -65,6 +75,21 @@ class Loading extends GetView<LocationController> {
         weatherData["response"]["body"]["items"]["item"][24]["fcstValue"];
     WeatherController.to.setWeather(precipitationdata, skydata, tempdata);
     print("data $precipitationdata $skydata $tempdata");
+  }
+
+  Future<void> getWeatherWeeklyData() async {
+    String url =
+        "https://api.openweathermap.org/data/2.5/onecall?lat=${controller.lat}&lon=${controller.lon}&exclude=hourly&appid=132a053a5227678b54b4d03157a806b1&units=metric&lang=kr";
+    Weather weather = new Weather(url);
+    var weatherData = await weather.getJsonData();
+    WeatherController.to.setWeeklyWeater(
+        weatherData["daily"][0],
+        weatherData["daily"][1],
+        weatherData["daily"][2],
+        weatherData["daily"][3],
+        weatherData["daily"][4],
+        weatherData["daily"][5],
+        weatherData["daily"][6]);
   }
 
   @override
