@@ -6,8 +6,7 @@ import 'package:weather_app/controller/weather.controller.dart';
 import 'package:weather_app/data/latlon_conversion.dart';
 import 'package:weather_app/data/my_location.dart';
 
-const apikey =
-    'N7SieJxvk8AVxfM4SrmQOiAc5hOjevbbE9DJepEi0ibB1mZ0otnwK9ytSSDwTcxdDR4/X/OtQ8keM0XcEFQ2Gg==';
+const apikey = '132a053a5227678b54b4d03157a806b1';
 
 class Loading extends GetView<LocationController> {
   var year, month, day, hour, minute;
@@ -34,11 +33,13 @@ class Loading extends GetView<LocationController> {
     //location 얻어오기
     await getLocation();
     //weather api 호출
-    await getWeatherData();
-
+    //await getWeatherData();
+    await getWeatherCurrentData();
     await getWeatherWeeklyData();
 
-    await 1.delay();
+    await getWeatherDailyData();
+
+    //   await 1.delay();
     Get.offNamed("/home", arguments: hour);
   }
 
@@ -57,39 +58,63 @@ class Loading extends GetView<LocationController> {
     controller.setGridLocation(conversion.grid_lat, conversion.grid_lon);
   }
 
-  Future<void> getWeatherData() async {
+  // Future<void> getWeatherData() async {
+  //   String url =
+  //       'http://apis.data.go.kr/1360000/VilageFcstInfoService/getUltraSrtFcst?serviceKey=${apikey}&pageNo=1&numOfRows=100&dataType=json&base_date=${year}${month}${day}&base_time=${hour}${minute}&nx=${controller.grid_lat}&ny=${controller.grid_lon}';
+  //   Weather weather = new Weather(url);
+  //   var weatherData = await weather.getJsonData();
+  //   print(weatherData);
+  //   String precipitationdata =
+  //       weatherData["response"]["body"]["items"]["item"][6]["fcstValue"];
+  //   String skydata =
+  //       weatherData["response"]["body"]["items"]["item"][18]["fcstValue"];
+  //   String tempdata =
+  //       weatherData["response"]["body"]["items"]["item"][24]["fcstValue"];
+  //   WeatherController.to.setWeather(precipitationdata, skydata, tempdata);
+  //   print("data $precipitationdata $skydata $tempdata");
+  // }
+  getWeatherCurrentData() async {
+    print("current");
     String url =
-        'http://apis.data.go.kr/1360000/VilageFcstInfoService/getUltraSrtFcst?serviceKey=${apikey}&pageNo=1&numOfRows=100&dataType=json&base_date=${year}${month}${day}&base_time=${hour}${minute}&nx=${controller.grid_lat}&ny=${controller.grid_lon}';
-    // String url =
-    //     "https://api.openweathermap.org/data/2.5/onecall?lat=${controller.lat}&lon=${controller.lon}&exclude=hourly&appid=132a053a5227678b54b4d03157a806b1&units=metric&lang=kr";
+        "https://api.openweathermap.org/data/2.5/weather?lat=${controller.lat}&lon=${controller.lon}&appid=${apikey}&units=metric&lang=kr";
     Weather weather = new Weather(url);
     var weatherData = await weather.getJsonData();
-    // print(weatherData["daily"]);
-    // var temp = weatherData["daily"][0]["temp"];
-    // var weathers = weatherData["daily"][0]["temp"];
-    String precipitationdata =
-        weatherData["response"]["body"]["items"]["item"][6]["fcstValue"];
-    String skydata =
-        weatherData["response"]["body"]["items"]["item"][18]["fcstValue"];
-    String tempdata =
-        weatherData["response"]["body"]["items"]["item"][24]["fcstValue"];
-    WeatherController.to.setWeather(precipitationdata, skydata, tempdata);
-    print("data $precipitationdata $skydata $tempdata");
+    Map data = {
+      "weather": weatherData["weather"],
+      "temp": weatherData["main"]["temp"],
+      "humidity": weatherData["main"]["humidity"],
+    };
+
+    WeatherController.to.setCurrentWeather(data);
+    print(data);
+  }
+
+  Future<void> getWeatherDailyData() async {
+    String url =
+        "https://api.openweathermap.org/data/2.5/onecall?lat=${controller.lat}&lon=${controller.lon}&exclude=current&appid=${apikey}&units=metric&lang=kr";
+    Weather weather = new Weather(url);
+    var weatherData = await weather.getJsonData();
+
+    for (int i = 0; i < weatherData["hourly"].length; i++) {
+      int unixTime = weatherData["hourly"][i]["dt"];
+      weatherData["hourly"][i]["dt"] = {
+        "day": DateTime.fromMillisecondsSinceEpoch(unixTime * 1000).day,
+        "hour": DateTime.fromMillisecondsSinceEpoch(unixTime * 1000).hour
+      };
+
+      WeatherController.to.setDailyWeater(weatherData["hourly"][i]);
+      print(weatherData["hourly"][i]);
+    }
   }
 
   Future<void> getWeatherWeeklyData() async {
     String url =
-        "https://api.openweathermap.org/data/2.5/onecall?lat=${controller.lat}&lon=${controller.lon}&exclude=hourly&appid=132a053a5227678b54b4d03157a806b1&units=metric&lang=kr";
+        "https://api.openweathermap.org/data/2.5/onecall?lat=${controller.lat}&lon=${controller.lon}&exclude=hourly&appid=${apikey}&units=metric&lang=kr";
     Weather weather = new Weather(url);
     var weatherData = await weather.getJsonData();
-    WeatherController.to.setWeeklyWeater(
-        weatherData["daily"][0],
-        weatherData["daily"][1],
-        weatherData["daily"][2],
-        weatherData["daily"][3],
-        weatherData["daily"][4],
-        weatherData["daily"][5],
-        weatherData["daily"][6]);
+    for (int i = 0; i < weatherData["daily"].length; i++) {
+      WeatherController.to.setWeeklyWeater(weatherData["daily"][i]);
+    }
   }
 
   @override
