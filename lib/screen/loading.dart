@@ -42,10 +42,7 @@ class _LoadingState extends State<Loading> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        color: Color(0xffFFEB9A),
-        child: Center(child: Image.asset("./assets/Loading/loading.png")),
-      ),
+      body: Center(child: Image.asset("./assets/Loading/loading.png")),
     );
   }
 }
