@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:weather_app/binding/location.binding.dart';
+import 'package:weather_app/binding/time.binding.dart';
 import 'package:weather_app/binding/weather.binding.dart';
 import 'package:weather_app/screen/home.dart';
 import 'package:weather_app/screen/loading.dart';
@@ -18,11 +19,11 @@ class MyApp extends StatelessWidget {
         GetPage(
             name: "/",
             page: () => Loading(),
-            bindings: [WeatherBinding(), LocationBinding()]),
+            bindings: [WeatherBinding(), LocationBinding(), TimeBinding()]),
         GetPage(
             name: "/home",
             page: () => Home(),
-            bindings: [WeatherBinding(), LocationBinding()]),
+            bindings: [WeatherBinding(), LocationBinding(), TimeBinding()]),
       ],
     );
   }
