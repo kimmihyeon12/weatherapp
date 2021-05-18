@@ -34,7 +34,7 @@ class Loading extends GetView<LocationController> {
     //location 얻어오기
     await getLocation();
     //weather api 호출
-    await getWeatherData();
+    //   await getWeatherData();
 
     await getWeatherWeeklyData();
 

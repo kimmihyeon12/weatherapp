@@ -122,8 +122,9 @@ class Home extends GetView<WeatherController> {
                                 rigthfont("월", 50, Colors.black),
                                 Padding(padding: EdgeInsets.only(left: 301.h)),
                                 Image.asset(
-                                  './assets/Home/rains.png',
-                                  width: 100.h,
+                                  './assets/Home/clouds.png',
+                                  width: 80.h,
+                                  height: 80.w,
                                 ),
                                 Padding(padding: EdgeInsets.only(left: 150.h)),
                                 rigthfont(
