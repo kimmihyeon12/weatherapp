@@ -19,5 +19,5 @@
 
 # 어플 사진
 ----------------------------
-![Alt text](C:\Users\mihyun\Desktop\1.png)
-
+<img width="80%" src="https://user-images.githubusercontent.com/76936708/118810706-286b2a00-b8e7-11eb-97dc-78ccb6eb2c7f.PNG"/>
+ 
