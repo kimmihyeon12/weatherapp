@@ -19,8 +19,7 @@
 
 # 어플 사진
 
-<img width="40%" src="https://user-images.githubusercontent.com/76936708/118810706-286b2a00-b8e7-11eb-97dc-78ccb6eb2c7f.PNG"/>
-<img width="40%" src="https://user-images.githubusercontent.com/76936708/118811266-c2cb6d80-b8e7-11eb-9d42-67512c02b2fc.PNG"/>
-<img width="40%" src="https://user-images.githubusercontent.com/76936708/118811270-c3fc9a80-b8e7-11eb-9ffb-9cac461d0e19.PNG"/>
+<img width="30%" src="https://user-images.githubusercontent.com/76936708/118810706-286b2a00-b8e7-11eb-97dc-78ccb6eb2c7f.PNG"/> <img width="30%" src="https://user-images.githubusercontent.com/76936708/118811266-c2cb6d80-b8e7-11eb-9d42-67512c02b2fc.PNG"/>
+<img width="30%" src="https://user-images.githubusercontent.com/76936708/118811270-c3fc9a80-b8e7-11eb-9ffb-9cac461d0e19.PNG"/>
  
  
